@@ -15,10 +15,9 @@ logging.getLogger('fontTools').setLevel(logging.ERROR)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOLS = os.path.join(ROOT, "tools")
 OUT = os.path.join(ROOT, "assets")
-CP = os.path.join(ROOT, "images") # Drop your cover images here
 
-# Custom palette
-ORANGE = "#ff6a00"
+# Custom palette - Emerald Green Theme
+GREEN = "#10b981"  
 INK = "#0b0c10"
 CREAM = "#f7f0dc"
 INDIGO = "#2a1b72"
@@ -34,7 +33,7 @@ THEMES = {
                   text="#0b0c10", muted="#5d6270", chip="#f2ecdd", chiptext="#2a2d36", tile="#f4efe3"),
 }
 
-# Embedded missing icons so you don't need the SVG files
+# Embedded missing icons
 BUILTIN_ICONS = {
     "kotlin": "M24 24H0V0h24L12 12Z",
     "android": "M17.5 15.34c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1m-11 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1m13.78-7.58l1.9-3.28c.11-.19.04-.44-.15-.55-.19-.11-.43-.04-.54.15l-1.93 3.34c-2.12-.96-4.49-1.49-7.05-1.49-2.55 0-4.92.53-7.04 1.49l-1.94-3.34c-.11-.19-.35-.26-.54-.15-.19.11-.26.36-.15.55l1.91 3.28C2.26 9.61 0 13.9 0 18.79h24c0-4.89-2.26-9.18-5.72-11.03z",
@@ -123,11 +122,33 @@ def save(svg, *path):
         fh.write(data)
     return len(data)
 
-def img_uri(path, w, h=None, crop=None, fmt="JPEG", q=82, cover=True):
-    try:
-        im = Image.open(path)
-    except FileNotFoundError:
-        # Fallback to an elegant placeholder if the user hasn't added the image yet
+def find_image(slug):
+    dirs_to_check = [
+        os.path.join(ROOT, "images"),
+        os.path.join(TOOLS, "images"),
+        os.path.join(OUT, "images"),
+        ROOT,
+    ]
+    exts_to_check = [".webp", ".png", ".jpg", ".jpeg", ""]
+    for d in dirs_to_check:
+        for ext in exts_to_check:
+            p = os.path.join(d, f"{slug}{ext}")
+            if os.path.exists(p) and os.path.isfile(p):
+                return p
+            if ext != "":
+                p_double = os.path.join(d, f"{slug}.webp{ext}")
+                if os.path.exists(p_double) and os.path.isfile(p_double):
+                    return p_double
+    return None
+
+def img_uri(slug, w, h=None, crop=None, fmt="JPEG", q=82, cover=True):
+    path = find_image(slug)
+    if path:
+        try:
+            im = Image.open(path)
+        except Exception:
+            im = Image.new("RGB", (w, h or w), "#1b1d27")
+    else:
         im = Image.new("RGB", (w, h or w), "#1b1d27")
         
     im = im.convert("RGBA" if fmt in ("PNG", "WEBP") else "RGB")
@@ -164,7 +185,6 @@ GLOBE = ("M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.95a15.7 15.7 0 0 0-1
          "H5.1a7.99 7.99 0 0 1 4.33-3.56A15.7 15.7 0 0 0 8.05 8ZM12 19.96A14.1 14.1 0 0 1 10.09 16h3.82A14.1 14.1 0 "
          "0 1 12 19.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38"
          "-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z")
-PEN = "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"
 
 def raw_icon(d, x, y, size, fill):
     return f'<path transform="translate({x} {y}) scale({size / 24})" d="{d}" fill="{fill}"/>'
@@ -189,11 +209,11 @@ def hero():
 <clipPath id="frame"><rect width="{W}" height="{H}" rx="28"/></clipPath>
 <radialGradient id="gIndigo" cx="0.22" cy="0.05" r="0.75"><stop offset="0" stop-color="#3b22b8" stop-opacity="0.95"/>
  <stop offset="0.45" stop-color="{INDIGO_DEEP}" stop-opacity="0.55"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
-<radialGradient id="gOrange" cx="0.62" cy="1.05" r="0.55"><stop offset="0" stop-color="{ORANGE}" stop-opacity="0.75"/>
- <stop offset="0.5" stop-color="#b8430a" stop-opacity="0.25"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
-<radialGradient id="gHalo" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{ORANGE}" stop-opacity="0.55"/>
- <stop offset="1" stop-color="{ORANGE}" stop-opacity="0"/></radialGradient>
-<linearGradient id="gName" x1="0" x2="1"><stop offset="0" stop-color="{ORANGE}"/><stop offset="0.55" stop-color="{PINK}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>
+<radialGradient id="gGreen" cx="0.62" cy="1.05" r="0.55"><stop offset="0" stop-color="{GREEN}" stop-opacity="0.75"/>
+ <stop offset="0.5" stop-color="#047857" stop-opacity="0.25"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
+<radialGradient id="gHalo" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{GREEN}" stop-opacity="0.55"/>
+ <stop offset="1" stop-color="{GREEN}" stop-opacity="0"/></radialGradient>
+<linearGradient id="gName" x1="0" x2="1"><stop offset="0" stop-color="{GREEN}"/><stop offset="0.55" stop-color="{CYAN}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>
 <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#ffffff" stroke-opacity="0.045"/></pattern>
 <linearGradient id="fadeBottom" x1="0" y1="0" x2="0" y2="1"><stop offset="0.72" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
 <mask id="photoMask"><rect width="{W}" height="{H}" fill="url(#fadeBottom)"/></mask>''')
@@ -207,10 +227,10 @@ def hero():
     
     s.add('<g clip-path="url(#frame)">')
     s.add(f'<rect width="{W}" height="{H}" fill="{INK}"/><rect width="{W}" height="{H}" fill="url(#grid)"/>')
-    s.add(f'<rect width="{W}" height="{H}" fill="url(#gIndigo)"/><rect width="{W}" height="{H}" fill="url(#gOrange)"/>')
+    s.add(f'<rect width="{W}" height="{H}" fill="url(#gIndigo)"/><rect width="{W}" height="{H}" fill="url(#gGreen)"/>')
     
     s.add(f'<circle cx="1010" cy="330" r="260" fill="url(#gHalo)"/>')
-    uri, (pw, ph) = img_uri(f"{CP}/profile-pic.webp", 470, fmt="WEBP", q=80)
+    uri, (pw, ph) = img_uri("profile-pic", 470, fmt="WEBP", q=80)
     s.add(f'<image href="{uri}" x="{1240 - pw}" y="{H - ph + 40}" width="{pw}" height="{ph}" mask="url(#photoMask)"/>')
     
     chips = [("Kotlin", "kotlin", 770, 190, 0), ("Docker", "docker", 1120, 150, 1.5),
@@ -230,7 +250,7 @@ def hero():
     s.text(976, 69, "Available for hackathons & roles", "G5", 15, CREAM)
     
     s.add('<g class="up" style="animation-delay:.1s">')
-    s.text(56, 158, "ANDROID & AI/ML DEVELOPER", "M5", 15, ORANGE, spacing=3)
+    s.text(56, 158, "ANDROID & AI/ML DEVELOPER", "M5", 15, GREEN, spacing=3)
     s.add('</g><g class="up" style="animation-delay:.25s">')
     s.text(52, 262, "Subhankar", "G8", 104, CREAM, spacing=-3)
     mx = 52 + text_width("Subhankar ", "geist", 800, 104, -3)
@@ -258,10 +278,10 @@ def hero():
         s.defs.append(f'<clipPath id="tw{i}"><rect x="{px}" y="290" height="44" width="0">'
                       f'<animate attributeName="width" values="{vv}" keyTimes="{kt}" calcMode="discrete" dur="{period}s" begin="{i * slot}s" repeatCount="indefinite"/></rect></clipPath>')
         s.add(f'<g clip-path="url(#tw{i})">')
-        s.text(px, 322, ph, "G6", 32, ORANGE)
+        s.text(px, 322, ph, "G6", 32, GREEN)
         s.add('</g>')
         cx = ";".join(f"{px + v + 3:.1f}" for v in vals)
-        s.add(f'<rect x="-20" y="296" width="3" height="34" fill="{ORANGE}" opacity="0">'
+        s.add(f'<rect x="-20" y="296" width="3" height="34" fill="{GREEN}" opacity="0">'
               f'<animate attributeName="x" values="{cx}" keyTimes="{kt}" calcMode="discrete" dur="{period}s" begin="{i * slot}s" repeatCount="indefinite"/>'
               f'<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;{t_del / period:.4f};{t_del / period + 0.001:.4f};1" calcMode="discrete" dur="{period}s" begin="{i * slot}s" repeatCount="indefinite"/></rect>')
         
@@ -284,8 +304,8 @@ def hero():
 def section(t, num, label, title, note):
     W, H = 1280, 116
     s = Svg(W, H)
-    s.defs.append(f'<linearGradient id="ln" x1="0" x2="1"><stop offset="0" stop-color="{ORANGE}"/><stop offset="0.35" stop-color="{ORANGE}" stop-opacity="0.25"/><stop offset="1" stop-color="{ORANGE}" stop-opacity="0"/></linearGradient>')
-    s.text(4, 34, f"{num} / {label}", "M5", 15, ORANGE, spacing=3)
+    s.defs.append(f'<linearGradient id="ln" x1="0" x2="1"><stop offset="0" stop-color="{GREEN}"/><stop offset="0.35" stop-color="{GREEN}" stop-opacity="0.25"/><stop offset="1" stop-color="{GREEN}" stop-opacity="0"/></linearGradient>')
+    s.text(4, 34, f"{num} / {label}", "M5", 15, GREEN, spacing=3)
     s.text(0, 86, title, "G8", 44, t["text"], spacing=-1)
     s.text(W - 4, 86, note, "G4", 18, t["muted"], anchor="end")
     s.add(f'<rect x="0" y="108" width="{W}" height="2" fill="url(#ln)"/>')
@@ -315,8 +335,8 @@ def product_card(t, name, img, tagline, chips, url_label, accent):
     for j, ln in enumerate(wrap(tagline, "geist", 400, 17, W - 56)[:3]):
         s.text(28, 398 + j * 25, ln, "G4", 17, t["muted"])
     chip_row(s, t, 28, 470, chips)
-    s.text(28, 532, url_label, "G6", 17, ORANGE)
-    s.add(f'<path d="M{W - 50} 520 l12 0 m0 0 l0 12 m0 -12 l-14 14" stroke="{ORANGE}" stroke-width="2.4" fill="none" stroke-linecap="round"/>')
+    s.text(28, 532, url_label, "G6", 17, GREEN)
+    s.add(f'<path d="M{W - 50} 520 l12 0 m0 0 l0 12 m0 -12 l-14 14" stroke="{GREEN}" stroke-width="2.4" fill="none" stroke-linecap="round"/>')
     return s
 
 def work_card(t, title, kind, img):
@@ -335,9 +355,9 @@ def pill(t, label, ic):
     s = Svg(w, 46)
     s.add(f'<rect x="0.5" y="0.5" width="{w - 1}" height="45" rx="23" fill="{t["card"]}" stroke="{t["line"]}"/>')
     if ic == "globe":
-        s.add(raw_icon(GLOBE, 18, 13, 20, ORANGE))
+        s.add(raw_icon(GLOBE, 18, 13, 20, GREEN))
     else:
-        s.add(icon(ic, 18, 13, 20, ORANGE))
+        s.add(icon(ic, 18, 13, 20, GREEN))
     s.text(46, 29, label, "G6", 16, t["text"])
     return s
 
@@ -347,7 +367,7 @@ def now_strip(t):
     s.css.append('.pulse{animation:pulse 2s ease-out infinite;transform-origin:center;transform-box:fill-box}'
                  '@keyframes pulse{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}')
     s.add(f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="38" fill="{t["card"]}" stroke="{t["line"]}"/>')
-    s.add(f'<rect x="14" y="14" width="96" height="48" rx="24" fill="{ORANGE}"/>')
+    s.add(f'<rect x="14" y="14" width="96" height="48" rx="24" fill="{GREEN}"/>')
     s.text(62, 44, "NOW", "M5", 16, "#ffffff", anchor="middle", spacing=3)
     s.add(f'<circle cx="140" cy="38" r="5" fill="#25d366"/><circle class="pulse" cx="140" cy="38" r="5" fill="#25d366"/>')
     msg = "Shipping LOFO and designing a standalone ESP32 home emergency system."
@@ -382,18 +402,18 @@ def cta():
     s = Svg(W, H)
     s.defs.append(f'''<clipPath id="cc"><rect width="{W}" height="{H}" rx="28"/></clipPath>
 <radialGradient id="ca" cx="0.15" cy="0" r="0.8"><stop offset="0" stop-color="#3b22b8" stop-opacity="0.9"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
-<radialGradient id="cb" cx="0.85" cy="1.1" r="0.7"><stop offset="0" stop-color="{ORANGE}" stop-opacity="0.8"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
+<radialGradient id="cb" cx="0.85" cy="1.1" r="0.7"><stop offset="0" stop-color="{GREEN}" stop-opacity="0.8"/><stop offset="1" stop-color="{INK}" stop-opacity="0"/></radialGradient>
 <pattern id="cg" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#fff" stroke-opacity="0.045"/></pattern>
-<linearGradient id="cn" x1="0" x2="1"><stop offset="0" stop-color="{ORANGE}"/><stop offset="0.55" stop-color="{PINK}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>''')
+<linearGradient id="cn" x1="0" x2="1"><stop offset="0" stop-color="{GREEN}"/><stop offset="0.55" stop-color="{CYAN}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>''')
     s.css.append('.sh{animation:sh 3.2s ease-in-out infinite}@keyframes sh{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}')
     s.add(f'<g clip-path="url(#cc)"><rect width="{W}" height="{H}" fill="{INK}"/><rect width="{W}" height="{H}" fill="url(#cg)"/>'
           f'<rect width="{W}" height="{H}" fill="url(#ca)"/><rect width="{W}" height="{H}" fill="url(#cb)"/></g>')
-    s.text(64, 92, "HAVE A PROJECT IN MIND?", "M5", 16, ORANGE, spacing=3)
+    s.text(64, 92, "HAVE A PROJECT IN MIND?", "M5", 16, GREEN, spacing=3)
     s.text(60, 168, "Let's build it", "G8", 72, CREAM, spacing=-2)
     s.text(60 + text_width("Let's build it ", "geist", 800, 72, -2), 168, "together.", "G8", 72, "url(#cn)", spacing=-2)
     s.text(64, 222, "Open to collaborations, open-source work, and hackathon teams.", "G4", 20, "#c9c3d8")
     bx, by = 960, 196
-    s.add(f'<g class="sh"><rect x="{bx}" y="{by}" width="256" height="60" rx="30" fill="{ORANGE}"/>')
+    s.add(f'<g class="sh"><rect x="{bx}" y="{by}" width="256" height="60" rx="30" fill="{GREEN}"/>')
     s.text(bx + 34, by + 38, "Let's talk", "G6", 21, "#ffffff")
     s.add(f'<path d="M{bx + 206} {by + 24} l12 0 m0 0 l0 12 m0 -12 l-14 14" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>')
     s.text(1216, 92, "subhankarsahoo.qzz.io", "M5", 15, "#c9c3d8", anchor="end")
@@ -401,21 +421,21 @@ def cta():
     return s
 
 SOFTWARE = [
-    ("attendo", "AttenDO", f"{CP}/attendo-cover.jpg",
-     "University attendance management ecosystem with a Gemini-powered RAG chatbot.",
-     ["Kotlin", "Android", "AI"], "GitHub", "#3b82f6"),
-    ("fileease", "FileEase", f"{CP}/fileease-cover.jpg",
-     "A sleek, locally-processed offline Android file manager.",
+    ("attendo", "AttenDO (v2.4)", "attendo-cover",
+     "Attendance ecosystem with a Kotlin wrapper, Gemini RAG chatbot, Firebase Auth, and OTA updates.",
+     ["Kotlin", "Firebase", "Gemini AI"], "GitHub", "#3b82f6"),
+    ("fileease", "FileEase", "fileease-cover",
+     "Offline Android file manager using Jetpack Compose, featuring optimistic UI and async coroutines.",
      ["Jetpack Compose", "Coroutines"], "GitHub", "#4ade80"),
-    ("lofo", "LOFO", f"{CP}/lofo-cover.jpg",
-     "Android application for managing lost and found item reports effortlessly.",
-     ["Kotlin", "Supabase"], "GitHub", PINK),
+    ("lofo", "LOFO", "lofo-cover",
+     "Android app for managing lost and found item reports using Kotlin, Supabase, and Cloudflare R2.",
+     ["Kotlin", "Supabase", "Cloudflare R2"], "GitHub", PINK),
 ]
 
 HARDWARE = [
-    ("sih26", "RELOCATION DSS AI", "SIH 2026", f"{CP}/sih26-cover.jpg"),
-    ("esp32", "ESP32 Panic Button", "IOT SYSTEM", f"{CP}/esp32-cover.jpg"),
-    ("bot", "Train Status Bot", "TELEGRAM BOT", f"{CP}/bot-cover.jpg"),
+    ("sih26", "RELOCATION DSS AI", "SIH 2026", "sih26-cover"),
+    ("esp32", "ESP32 Panic Button", "IOT SYSTEM", "esp32-cover"),
+    ("bot", "Train Status Bot", "TELEGRAM BOT", "bot-cover"),
 ]
 
 PILLS = [("site", "Portfolio", "globe"), ("linkedin", "LinkedIn", "linkedin"),
@@ -440,8 +460,7 @@ def main():
             sizes[f"{name}/l-{slug}"] = save(pill(t, label, ic), name, f"l-{slug}.svg")
         sizes[f"{name}/stack"] = save(stack(t), name, "stack.svg")
     total = sum(sizes.values())
-    big = sorted(sizes.items(), key=lambda kv: -kv[1])[:6]
-    print(f"{len(sizes)} files, {total / 1e6:.2f} MB total; largest: " + ", ".join(f"{k} {v // 1024}KB" for k, v in big))
+    print(f"\n{len(sizes)} files generated ({total / 1e6:.2f} MB total).")
 
 if __name__ == "__main__":
     main()
