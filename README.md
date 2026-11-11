@@ -13,7 +13,7 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s01.svg"><img src="assets/light/s01.svg" width="100%" alt="Software & Apps"></picture>
 
 <p align="center">
-<a href="https://github.com/subhankarsahoopersonal/attendo"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/p-attendo.svg"><img src="assets/light/p-attendo.svg" width="32%"></picture></a>
+<a href="https://github.com/subhankarsahoopersonal/attendo-attendance-tracker"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/p-attendo.svg"><img src="assets/light/p-attendo.svg" width="32%"></picture></a>
 <a href="https://github.com/subhankarsahoopersonal/fileease"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/p-fileease.svg"><img src="assets/light/p-fileease.svg" width="32%"></picture></a>
 <a href="https://github.com/subhankarsahoopersonal/lofo"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/p-lofo.svg"><img src="assets/light/p-lofo.svg" width="32%"></picture></a>
 </p>
