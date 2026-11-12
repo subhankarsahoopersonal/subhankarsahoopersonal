@@ -94,7 +94,7 @@ FAMILIES = {
 class Svg:
     def __init__(self, w, h):
         self.w, self.h = w, h
-        self.parts, self.defs, self.css = [], []
+        self.parts, self.defs, self.css = [], [], []
         self.used = {}
 
     def add(self, s):
@@ -252,13 +252,9 @@ def hero():
     s.add('<g class="up" style="animation-delay:.1s">')
     s.text(56, 158, "ANDROID & AI/ML DEVELOPER", "M5", 15, GREEN, spacing=3)
     s.add('</g><g class="up" style="animation-delay:.25s">')
-    
-    # ---------------------------------------------------------
-    # FIXED: Reduced font sizes for the name block from 104 to 80
-    # ---------------------------------------------------------
-    s.text(52, 262, "Subhankar", "G8", 80, CREAM, spacing=-3)
-    mx = 52 + text_width("Subhankar ", "geist", 800, 80, -3)
-    s.text(mx, 262, "Sahoo", "G8", 80, "url(#gName)", spacing=-3)
+    s.text(52, 262, "Meet", "G8", 104, CREAM, spacing=-3)
+    mx = 52 + text_width("Meet ", "geist", 800, 104, -3)
+    s.text(mx, 262, "Subhankar", "G8", 104, "url(#gName)", spacing=-3)
     s.add('</g>')
     
     prefix = "I build "
