@@ -36,4 +36,4 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/subhankarsahoopersonal/subhankarsahoopersonal/output/snake-dark.svg"><img src="https://raw.githubusercontent.com/subhankarsahoopersonal/subhankarsahoopersonal/output/snake-light.svg" width="100%"></picture>
 <br><br>
 
-<a href="mailto:subhankarsahoo@example.com"><img src="assets/cta.svg" width="100%"></a>
+<a href="mailto:subhankarsahoo.mail@gmail.com"><img src="assets/cta.svg" width="100%"></a>
