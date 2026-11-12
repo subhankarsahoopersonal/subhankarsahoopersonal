@@ -254,7 +254,7 @@ def hero():
     s.add('</g><g class="up" style="animation-delay:.25s">')
     s.text(52, 262, "Meet", "G8", 104, CREAM, spacing=-3)
     mx = 52 + text_width("Meet ", "geist", 800, 104, -3)
-    s.text(mx, 262, "Subhankar", "G8", 104, "url(#gName)", spacing=-3)
+    s.text(mx, 262, "Subha", "G8", 104, "url(#gName)", spacing=-3)
     s.add('</g>')
     
     prefix = "I build "
